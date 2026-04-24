@@ -156,6 +156,7 @@ MonoBehaviour:
   useSampleLevel: 0
   levelJsonTextAsset: {fileID: 0}
   resourcesLevelPath: Levels/phase2_runtime_sample
+  consumePendingEditorLevel: 1
 --- !u!4 &508235779
 Transform:
   m_ObjectHideFlags: 0

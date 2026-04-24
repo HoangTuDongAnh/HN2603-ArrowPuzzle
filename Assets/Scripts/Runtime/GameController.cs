@@ -21,6 +21,7 @@ namespace ArrowPuzzle.Runtime
         [SerializeField] private bool useSampleLevel = false;
         [SerializeField] private TextAsset levelJsonTextAsset;
         [SerializeField] private string resourcesLevelPath = "Levels/phase2_runtime_sample";
+        [SerializeField] private bool consumePendingEditorLevel = true;
 
         private LevelRuntimeState runtimeState;
         private HintService hintService;
@@ -66,7 +67,7 @@ namespace ArrowPuzzle.Runtime
             }
 
             JsonLevelSerializer.EnsureValid(levelData);
-            lastLoadedLevelData = levelData;
+            lastLoadedLevelData = JsonLevelSerializer.Clone(levelData);
             runtimeState = new LevelRuntimeState(levelData);
             hintService = new HintService();
 
@@ -127,8 +128,7 @@ namespace ArrowPuzzle.Runtime
                 return;
             }
 
-            string json = JsonLevelSerializer.Serialize(lastLoadedLevelData, false);
-            StartGame(JsonLevelSerializer.Deserialize(json));
+            StartGame(JsonLevelSerializer.Clone(lastLoadedLevelData));
         }
 
         [ContextMenu("Load Level From TextAsset")]
@@ -217,6 +217,11 @@ namespace ArrowPuzzle.Runtime
 
         private LevelData LoadLevelData()
         {
+            if (consumePendingEditorLevel && RuntimeLevelSession.HasPendingLevel)
+            {
+                return RuntimeLevelSession.ConsumePendingLevel();
+            }
+
             if (!useSampleLevel && levelJsonTextAsset != null)
             {
                 return JsonLevelSerializer.Deserialize(levelJsonTextAsset.text);
